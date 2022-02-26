@@ -6,33 +6,42 @@ app.set('view engine', 'ejs');
 app.use(express.static("public"));
 app.use(bodyParser.urlencoded({extended: true}))
 
-var  items = ["one", "two"];
+let  items = [];
+let  workItems = [];
 
 app.get('/', (req, res) => {
 
 
-  var today = new Date();
+  let today = new Date();
 
-  var options  = {
+  let options  = {
     weekday: "long",
     day: "numeric",
     month: "long"
   };
 
-  var day = today.toLocaleDateString("kr-KR", options);
+  let day = today.toLocaleDateString("kr-KR", options);
 
-  res.render('index', {kindOfDay: day, newListItem: items});
+  res.render('index', {listTitle: day, newListItem: items});
 });
 
 
 app.post("/", (req, res) => {
-  var item = req.body.newItem;
+  let item = req.body.newItem;
 
-  items.push(item);
+  if (req.body.list === "Work") {
+    workItems.push(item);
+    res.redirect("/work")
+  } else {
+    items.push(item);
+    res.redirect("/");
+  }
 
-  res.redirect("/");
 
+})
 
+app.get("/work", (req,res) => {
+  res.render("index", {listTitle: "Work", newListItem: workItems})
 })
 
 
